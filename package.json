@@ -4,11 +4,17 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev:next": "next dev",
+    "dev:ws": "cross-env NODE_ENV=development tsx watch ./src/server/wsServer.ts --tsconfig tsconfig.server.json",
+    "dev": "run-p dev:*",
     "lint": "next lint",
     "start": "next start"
   },
   "dependencies": {
+    "tsx": "^3.9.0",
+    "ws": "^8.0.0",
+    "clsx": "^1.1.1",
+    "node-fetch": "^2.6.1",
     "@tanstack/react-query": "^4.20.0",
     "@trpc/client": "^10.8.1",
     "@trpc/next": "^10.8.1",
@@ -21,6 +27,9 @@
     "zod": "^3.20.2"
   },
   "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "@types/ws": "^8.2.0",
+    "cross-env": "^7.0.3",
     "@types/node": "^18.11.18",
     "@types/prettier": "^2.7.2",
     "@types/react": "^18.0.26",
