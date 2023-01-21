@@ -14,15 +14,35 @@ const ee = new EventEmitter();
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
   ws: publicProcedure.subscription(() => {
-    return observable<any>((emit) => {
-      const onAdd = (data: any) => {
-        emit.next(data);
+    return observable<{
+      text: string;
+      isTyping: boolean;
+    }>((emit) => {
+      const onAdd = (data: { text: string }) => {
+        emit.next({
+          text: data.text,
+          isTyping: false,
+        });
       };
 
       ee.on("add", onAdd);
 
       return () => {
         ee.off("add", onAdd);
+      };
+    });
+  }),
+
+  isTyping: publicProcedure.subscription(() => {
+    return observable<boolean>((emit) => {
+      const onTyping = (data: boolean) => {
+        emit.next(data);
+      };
+
+      ee.on("typing", onTyping);
+
+      return () => {
+        ee.off("typing", onTyping);
       };
     });
   }),
@@ -38,6 +58,9 @@ export const appRouter = createTRPCRouter({
         success: true,
       };
     }),
+  typing: publicProcedure.input(z.boolean()).mutation(({ input }) => {
+    ee.emit("typing", input);
+  }),
 });
 
 // export type definition of API

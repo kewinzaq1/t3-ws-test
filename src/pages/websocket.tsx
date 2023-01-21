@@ -1,17 +1,23 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { api } from "../../src/utils/api";
 
 export default function WebSocketPage() {
+  const [text, setText] = useState("");
+
   api.ws.useSubscription(undefined, {
     onData: (data) => {
-      console.log("data", data);
+      setText(data.text);
     },
   });
 
   const { mutate } = api.add.useMutation();
+  const { mutate: typing } = api.typing.useMutation();
 
   const [state, setState] = useState("");
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState(e.target.value);
+  };
   return (
     <div className="flex w-screen flex-col items-center justify-center">
       <h1 className="font-mono text-3xl">WebSocket</h1>
@@ -19,7 +25,9 @@ export default function WebSocketPage() {
         className="rounded-md border-2 border-gray-300 p-2"
         type="text"
         value={state}
-        onChange={(e) => setState(e.target.value)}
+        onFocus={() => typing(true)}
+        onBlur={() => typing(false)}
+        onChange={handleChange}
       />
       <button
         onClick={() => mutate({ text: state })}
@@ -27,6 +35,7 @@ export default function WebSocketPage() {
       >
         Add
       </button>
+      {text}
     </div>
   );
 }
